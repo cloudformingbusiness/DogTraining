@@ -1,0 +1,6 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="6" y="20" width="36" height="18" rx="3" fill="#1976d2"/>
+  <rect x="14" y="10" width="20" height="10" rx="2" fill="#ffc107"/>
+  <rect x="20" y="28" width="8" height="10" rx="1" fill="#fff"/>
+  <text x="24" y="44" text-anchor="middle" font-size="10" fill="#333" font-family="Arial, sans-serif">BauLogPro</text>
+</svg>

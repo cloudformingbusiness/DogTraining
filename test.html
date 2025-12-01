@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>
+      Fotografie-Challenge – Licht und Schatten (A4, s/w-freundlich)
+    </title>
+    <style>
+      :root {
+        --font-title: "Georgia", serif;
+        --font-body: "Arial", sans-serif;
+        --font-small: "Tahoma", sans-serif;
+      }
+
+      /* Grundlayout PDF-Kompatibel */
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: var(--font-body);
+        background: #ffffff;
+        color: #333333;
+      }
+
+      /* VOLLBREITES COVER (A4-kompatibel) */
+      .cover-page {
+        width: 210mm; /* komplette A4-Breite */
+        height: 297mm; /* komplette A4-Höhe */
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #111111, #555555);
+        color: #ffffff;
+        text-align: center;
+        position: relative;
+        page-break-after: always; /* eigene Seite */
+      }
+
+      .cover-inner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 160mm;
+      }
+
+      .logo {
+        width: 45mm;
+        margin: 0 auto 10mm auto;
+        border: 1px solid #ffffff;
+        padding: 2mm;
+        display: block;
+      }
+
+      .cover-title {
+        font-family: var(--font-title);
+        font-size: 28pt;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        margin: 6mm 0 2mm;
+      }
+
+      .cover-sub {
+        font-family: var(--font-title);
+        font-size: 16pt;
+        margin: 0 0 5mm;
+      }
+
+      .cover-meta {
+        font-family: var(--font-small);
+        font-size: 10pt;
+        margin-top: 5mm;
+      }
+
+      /* INNENSEITEN */
+      main {
+        width: 180mm; /* A4 minus Rand */
+        margin: 10mm auto;
+      }
+
+      .chapter {
+        page-break-before: always;
+        padding: 15mm 15mm 20mm;
+      }
+
+      h2 {
+        font-family: var(--font-title);
+        font-size: 18pt;
+        margin: 0 0 4mm;
+        border-bottom: 1px solid #c8c8c8;
+        padding-bottom: 2mm;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+
+      h3 {
+        font-family: var(--font-body);
+        font-size: 12pt;
+        margin: 8mm 0 2mm;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+
+      p,
+      li {
+        font-family: var(--font-body);
+        font-size: 11pt;
+        line-height: 1.55;
+      }
+
+      ul,
+      ol {
+        margin: 0 0 5mm 6mm;
+      }
+
+      .highlight-box {
+        margin: 4mm 0 6mm;
+        padding: 4mm 5mm;
+        border-radius: 5px;
+        border: 1px solid #c8c8c8;
+        background: #f7f7f7;
+        font-size: 10pt;
+        font-family: var(--font-body);
+      }
+
+      .note-area {
+        border: 1px dashed #c8c8c8;
+        background: #ffffff;
+        border-radius: 5px;
+        height: 60mm;
+        margin-top: 3mm;
+        margin-bottom: 7mm;
+        padding: 3mm 4mm;
+      }
+
+      .note-title {
+        font-family: var(--font-small);
+        font-size: 9pt;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        margin-bottom: 2mm;
+      }
+
+      .takeaway {
+        margin-top: 8mm;
+        padding: 4mm 5mm;
+        border: 2px solid #333333;
+        font-style: italic;
+        background: #696969;
+        color: rgb(255, 255, 255);
+        font-family: var(--font-body);
+      }
+
+      .takeaway-title {
+        font-family: var(--font-small);
+        font-size: 9pt;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        margin-bottom: 2mm;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ===== COVER (vollflächig) ===== -->
+    <div class="cover-page">
+      <div class="cover-inner">
+        <img
+          src="https://www.cloudforming.de/wp-content/uploads/2025/11/Cloudforming_Logo_Cloudforming-Firmenlogo-Sehr-Gross-Weiss-1024.png"
+          class="logo"
+          alt="Logo"
+        />
+        <div class="cover-title">Fotografie-Challenge</div>
+        <div class="cover-sub">Licht und Schatten</div>
+        <div class="cover-meta">Workbook · Für Ausdruck optimiert</div>
+      </div>
+    </div>
+
+    <!-- ===== INNENSEITEN ===== -->
+    <main>
+      <!-- Einführung -->
+      <section class="chapter">
+        <h2>Einführung</h2>
+        <p>
+          In dieser Challenge geht es um das Thema
+          <strong>Licht und Schatten</strong>.
+        </p>
+
+        <div class="highlight-box">
+          Ziel der Challenge:<br />
+          Erforschung von Licht und Schatten in der Fotografie
+        </div>
+
+        <h3>Kurzbeschreibung der Aufgabe:</h3>
+        <p>
+          Erstelle ein Bild, das die Wirkung von Licht und Schatten auf deinem
+          Motiv zeigt.
+        </p>
+
+        <div class="note-area">
+          <div class="note-title">Notizen zur Einführung</div>
+        </div>
+      </section>
+
+      <!-- Challenge -->
+      <section class="chapter">
+        <h2>Challenge: Licht und Schatten</h2>
+
+        <h3>Thema</h3>
+        <p><strong>Licht und Schatten</strong></p>
+
+        <h3>Rahmenbedingungen</h3>
+        <ul>
+          <li>
+            <strong>Motiv:</strong> Ein einfacher Gegenstand (z.B. eine Tasse
+            oder eine Pflanze)
+          </li>
+          <li>
+            <strong>Umgebung:</strong> Zuhause in einem Raum mit Fensterlicht
+          </li>
+          <li>
+            <strong>Equipment:</strong>
+            <ul>
+              <li>Kamera oder Smartphone</li>
+              <li>Stativ (optional)</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Lichtbedingungen:</strong> Natürliches Licht durch ein
+            Fenster dringt ein
+          </li>
+          <li><strong>Anzahl Lichtquellen:</strong> 1</li>
+          <li><strong>Zeitaufwand:</strong> 30 Minuten</li>
+          <li>
+            <strong>Einschränkungen:</strong>
+            <ul>
+              <li>Keine Nutzung von Blitzlichtern</li>
+              <li>Nur natürliche Lichtquellen verwenden</li>
+            </ul>
+          </li>
+        </ul>
+
+        <div class="note-area">
+          <div class="note-title">Notizen zum Setup</div>
+        </div>
+      </section>
+
+      <section class="chapter">
+        <h3>Ziel</h3>
+        <p>Erforschung von Licht und Schatten in der Fotografie</p>
+
+        <h3>Schritte zur Umsetzung</h3>
+        <ol>
+          <li>Wähle einen einfachen Gegenstand als Motiv.</li>
+          <li>
+            Positioniere das Motiv so, dass das natürliche Licht von der Seite
+            fällt.
+          </li>
+          <li>
+            Experimentiere mit verschiedenen Winkeln, um die Schatten zu
+            betonen.
+          </li>
+          <li>Ändere die Blende, um die Lichtmenge zu regulieren.</li>
+          <li>
+            Fotografiere das Motiv in verschiedenen Positionen und
+            Lichtbedingungen.
+          </li>
+          <li>
+            Wähle die beste Aufnahme aus und bearbeite sie gegebenenfalls.
+          </li>
+        </ol>
+
+        <div class="note-area">
+          <div class="note-title">Notizen zur Durchführung</div>
+        </div>
+
+        <h3>Zusatz-Experiment (optional)</h3>
+        <p>
+          In der zweiten Phase könntest du versuchen, das gleiche Motiv mit
+          künstlichem Licht zu beleuchten und die Unterschiede zu dokumentieren.
+        </p>
+
+        <h3>Technische Hinweise</h3>
+        <ul>
+          <li>
+            Achte auf den Zeitaufwand und plane genügend Zeit für die Fotografie
+            ein.
+          </li>
+          <li>
+            Setze die Blende ein, um verschiedene Lichtverhältnisse
+            auszuprobieren.
+          </li>
+        </ul>
+      </section>
+
+      <!-- Tipps & Merksätze -->
+      <section class="chapter">
+        <h3>Tipps</h3>
+        <ul>
+          <li>Fotografiere während der goldenen Stunde für weiches Licht.</li>
+          <li>Nutze Reflektoren, um Schatten aufzuhellen.</li>
+        </ul>
+
+        <h3>Merksätze</h3>
+        <ul>
+          <li>Licht formt die Stimmung eines Fotos.</li>
+          <li>Schatten verleihen Tiefe und Dimension.</li>
+        </ul>
+
+        <div class="takeaway">
+          <div class="takeaway-title">Merksatz / Takeaway</div>
+          Die Nutzung von Licht und Schatten kann die Wirkung deiner Fotos
+          erheblich steigern.
+        </div>
+
+        <div class="note-area">
+          <div class="note-title">Eigener Merksatz / wichtigste Erkenntnis</div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

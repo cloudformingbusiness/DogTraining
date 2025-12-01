@@ -1,0 +1,59 @@
+# Server-Deployment-Skripte ignorieren
+helper/Server-Deployment/deploy_V2.sh
+# Expo
+.expo/
+dist/
+web-build/
+
+# Dependencies
+node_modules/
+
+# Build outputs
+build/
+*.apk
+*.aab
+*.ipa
+
+# Android
+android/app/build/
+android/build/
+android/.gradle/
+app/.cxx/
+*.jks
+*.keystore
+!debug.keystore.example
+!my-release-key.keystore.example
+
+# iOS
+ios/Pods/
+ios/build/
+*.xcworkspace
+!default.xcworkspace
+
+# macOS
+.DS_Store
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Gradle
+.gradle/
+
+# Lock files (optional - remove this line if you want to keep package-lock.json)
+# package-lock.json
+
+# Private Foders
+helper/
