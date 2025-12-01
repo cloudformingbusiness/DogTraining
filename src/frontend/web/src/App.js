@@ -1,74 +1,68 @@
-import {
-  AppBar,
-  Button,
-  Container,
-  CssBaseline,
-  ThemeProvider,
-  Toolbar,
-  Typography,
-  createTheme,
-} from "@mui/material";
-import React, { useState } from "react";
-import { ReactComponent as Logo } from "./assets/logo.svg";
-import ProjektDetail from "./ProjektDetail";
-import ProjektUebersicht from "./ProjektUebersicht";
-import Settings from "./Settings";
+import { useEffect, useState, useRef } from "react";
+import "./App.css";
 
-const App = () => {
-  const [page, setPage] = useState("uebersicht");
-  const [themeMode, setThemeMode] = useState("light");
-  const [selectedProjekt, setSelectedProjekt] = useState(null);
+const ESP_IP = "192.168.4.1"; // anpassen, falls STA mode
 
-  const theme = createTheme({
-    palette: {
-      mode: themeMode,
-      primary: { main: "#1976d2" },
-      secondary: { main: "#ffc107" },
-    },
-  });
+export default function App() {
+  const [connected, setConnected] = useState(false);
+  const [log, setLog] = useState([]);
+  const esRef = useRef(null);
 
-  const handleNav = (target) => setPage(target);
-  const handleProjektSelect = (projekt) => {
-    setSelectedProjekt(projekt);
-    setPage("detail");
-  };
+  useEffect(() => {
+    const url = `http://${ESP_IP}/events`;
+    const es = new EventSource(url);
+    es.onopen = () => setConnected(true);
+    es.onmessage = (ev) => {
+      try {
+        const data = JSON.parse(ev.data);
+        if (data.event === "TRIGGER") {
+          const entry = { ts: data.ts, recv: Date.now() };
+          setLog((l) => [entry, ...l].slice(0, 200));
+        }
+      } catch (e) {
+        console.warn("Invalid event data", e);
+      }
+    };
+    es.onerror = (e) => {
+      console.warn("EventSource error", e);
+      setConnected(false);
+      // leave it; browser auto-reconnects by default
+    };
+    esRef.current = es;
+    return () => {
+      es.close();
+    };
+  }, []);
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <AppBar position="static">
-        <Toolbar>
-          <Logo style={{ height: 40, marginRight: 16 }} />
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            BauLogPro Dashboard
-          </Typography>
-          <Button color="inherit" onClick={() => handleNav("uebersicht")}>
-            Projekt Übersicht
-          </Button>
-          <Button color="inherit" onClick={() => handleNav("detail")}>
-            Details Projekt
-          </Button>
-          <Button color="inherit" onClick={() => handleNav("settings")}>
-            Settings
-          </Button>
-        </Toolbar>
-      </AppBar>
-      <Container maxWidth="lg" sx={{ mt: 4 }}>
-        {page === "uebersicht" && (
-          <ProjektUebersicht onProjektSelect={handleProjektSelect} />
-        )}
-        {page === "detail" && (
-          <ProjektDetail
-            projekt={selectedProjekt}
-            onBack={() => setPage("uebersicht")}
-          />
-        )}
-        {page === "settings" && (
-          <Settings theme={themeMode} setTheme={setThemeMode} />
-        )}
-      </Container>
-    </ThemeProvider>
-  );
-};
+    <div className="app">
+      <header>
+        <h1>ESP32 Lichtschranke</h1>
+        <div className={"status " + (connected ? "on" : "off")}>
+          {connected ? "verbunden" : "getrennt"}
+        </div>
+      </header>
 
-export default App;
+      <main>
+        <section className="log">
+          <h2>Letzte Trigger</h2>
+          <table>
+            <thead>
+              <tr><th>#</th><th>Device TS (ms)</th><th>Empfangen</th><th>Diff (ms)</th></tr>
+            </thead>
+            <tbody>
+              {log.map((item, i) => (
+                <tr key={item.ts + "-" + i}>
+                  <td>{i+1}</td>
+                  <td>{item.ts}</td>
+                  <td>{new Date(item.recv).toLocaleTimeString()}</td>
+                  <td>{item.recv - item.ts}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      </main>
+    </div>
+  );
+}
