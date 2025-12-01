@@ -1,1 +1,2 @@
-# boot.py -- run on boot-up
+# boot.py – optional, aber empfohlen
+print("Booting ESP32...")
