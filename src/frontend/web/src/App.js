@@ -374,6 +374,19 @@ function App() {
     }
   }, [theme]);
 
+  // Statusanzeige für Lichtschranke immer aktuell halten
+  useEffect(() => {
+    if (status === "timing" && !lichtschrankeAktiv) {
+      setLichtschrankeAktiv(true);
+    }
+    if (
+      (status === "idle" || status === "offline" || status === "finished") &&
+      lichtschrankeAktiv
+    ) {
+      setLichtschrankeAktiv(false);
+    }
+  }, [status]);
+
   return (
     <div className={`App ${theme}`}>
       <header className="App-header">
