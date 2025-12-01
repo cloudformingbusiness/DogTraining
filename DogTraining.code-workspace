@@ -1,0 +1,65 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "serial:/COM10",
+			"uri": "serial://com10/"
+		},
+		{
+			"name": "Hunderennen",
+			"path": "src/backend/arduino/Hunderennen"
+		},
+		{
+			"name": "Lichtschranke",
+			"path": "src/backend/arduino/Lichtschranke"
+		}
+	],
+	"settings": {
+		"window.zoomLevel": 2,
+		"favorites.resources": [
+			{
+				"filePath": "android\\app\\build\\outputs\\apk\\release\\app-release.apk",
+				"group": "Default"
+			},
+			{
+				"filePath": "android\\app\\build\\outputs\\apk",
+				"group": "Default"
+			},
+			{
+				"filePath": "android\\app\\build\\outputs\\bundle",
+				"group": "Default"
+			}
+		],
+		"java.compile.nullAnalysis.mode": "automatic",
+		"git.ignoreLimitWarning": true,
+		"java.configuration.updateBuildConfiguration": "disabled",
+		"sqltools.connections": [
+			{
+				"ssh": "Disabled",
+				"previewLimit": 50,
+				"server": "159.69.180.1",
+				"port": 5432,
+				"driver": "PostgreSQL",
+				"name": "postgresql-database-dev",
+				"database": "postgres",
+				"username": "postgres",
+				"ssl": false,
+				"password": "v4OIO4LjjCzaxucE3zzoFQU7wRiBrhG0eq4VKo9ZHKiWeV5bhtFB0bY9GQvALqYi"
+			},
+			{
+				"ssh": "Disabled",
+				"previewLimit": 50,
+				"server": "159.69.180.1",
+				"port": 5433,
+				"driver": "PostgreSQL",
+				"name": "postgresql-database-baulogpro",
+				"database": "baulogpro",
+				"username": "postgres",
+				"ssl": false,
+				"password": "963FoxsMD3kZJRXxXoFINT86PzCF886nRVVjoyWiycGgfV1BipJhUkrKYlnAp3IE"
+			}
+		]
+	}
+}
