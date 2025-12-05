@@ -2,8 +2,8 @@
 setlocal
 
 REM --- Konfiguration ---
-set "SSID=Hunderennen-ESP"
-set "PASSWORD=12345678"
+set "SSID=Lichtschranke_ESP32"
+set "PASSWORD=Pass123word"
 set "PROFILE_XML=%~dp0esp32_wlan_profile.xml"
 set "ESP32_IP=192.168.4.1"
 
@@ -64,8 +64,8 @@ echo.
 echo Verbindung zum ESP32 hergestellt.
 
 REM --- HTTP-Request an ESP32 API senden ---
-echo Sende Status-Request an http://%ESP32_IP%/api/status
-curl --fail --max-time 5 "http://%ESP32_IP%/api/status"
+echo Sende Status-Request an http://%ESP32_IP%/simple-status
+curl --fail --max-time 5 "http://%ESP32_IP%/simple-status"
 if errorlevel 1 (
     echo Request fehlgeschlagen.
     goto cleanup
