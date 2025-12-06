@@ -185,30 +185,177 @@ def index(request):
   <head>
   <meta charset='UTF-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-  <title>ESP32 Webserver</title>
+  <title>ESP32 Lichtschranke</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
-    header { background: #0077cc; color: #fff; padding: 1em; text-align: center; }
-    main { padding: 2em; }
-    footer { background: #eee; color: #333; text-align: center; padding: 1em; position: fixed; width: 100%; bottom: 0; }
-    .card { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #ccc; padding: 2em; max-width: 400px; margin: 2em auto; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .container { width: 100%; max-width: 500px; padding: 20px; }
+    header { text-align: center; margin-bottom: 20px; }
+    header h1 { color: #1c1e21; font-size: 24px; }
+    footer { text-align: center; margin-top: 20px; color: #8a8d91; font-size: 12px; }
+    .card { background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, .1), 0 8px 16px rgba(0, 0, 0, .1); padding: 20px; margin-bottom: 20px; }
+    .info-card p { margin: 5px 0; color: #606770; }
+    .stopwatch-card h3 { text-align: center; color: #1c1e21; margin-top: 0; }
+    #stopwatch-display { font-family: "Menlo", "Consolas", "Monaco", monospace; font-size: 3em; text-align: center; color: #1c1e21; margin: 20px 0; }
+    .button-container { display: flex; justify-content: space-around; gap: 10px; }
+    .button-container button { flex-grow: 1; border: none; border-radius: 6px; padding: 12px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.2s; }
+    #start-btn { background-color: #42b72a; color: white; }
+    #start-btn:hover:not(:disabled) { background-color: #36a420; }
+    #stop-btn { background-color: #fa3e3e; color: white; }
+    #stop-btn:hover:not(:disabled) { background-color: #e03030; }
+    #reset-btn { background-color: #6c757d; color: white; }
+    #reset-btn:hover:not(:disabled) { background-color: #5a6268; }
+    button:disabled { background-color: #ccd0d5; color: #8a8d91; cursor: not-allowed; }
+    .toggle-container { display: flex; justify-content: space-between; align-items: center; padding: 10px; background-color: #f0f2f5; border-radius: 6px; margin-bottom: 20px; }
+    .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 28px; }
+    .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #1877f2; }
+    input:checked + .slider:before { transform: translateX(22px); }
+    #status-message { text-align: center; margin-top: 15px; font-weight: bold; }
   </style>
   </head>
   <body>
-  <header>
-    <h1>ESP32 Webserver</h1>
-  </header>
-  <main>
-    <div class="card">
-    <h2>Willkommen!</h2>
-    <p>Du bist mit dem ESP32 verbunden.</p>
-    <p>Microdot-Webserver läuft.</p>
-    <p><a href="/simple-status">API-Status</a></p>
-    </div>
-  </main>
-  <footer>
-    &copy; 2025 DogTraining ESP32
-  </footer>
+  <div class="container">
+    <header><h1>ESP32 Lichtschranke</h1></header>
+    <main>
+      <div class="card stopwatch-card">
+        <h3>Manuelle Zeitmessung</h3>
+        <div class="toggle-container">
+          <label for="manual-mode-switch">Manuelle Messung</label>
+          <label class="switch">
+            <input type="checkbox" id="manual-mode-switch">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div id="stopwatch-display">00:00:00.000</div>
+        <div class="button-container">
+          <button id="start-btn" disabled>Start</button>
+          <button id="stop-btn" disabled>Stop</button>
+          <button id="reset-btn" disabled>Reset</button>
+        </div>
+        <p id="status-message"></p>
+      </div>
+      <div class="card info-card">
+        <p><b>Status:</b> Verbunden</p>
+        <p><b>API:</b> <a href="/simple-status">/simple-status</a></p>
+      </div>
+    </main>
+    <footer>&copy; 2025 DogTraining ESP32</footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const manualModeSwitch = document.getElementById('manual-mode-switch');
+      const startBtn = document.getElementById('start-btn');
+      const stopBtn = document.getElementById('stop-btn');
+      const resetBtn = document.getElementById('reset-btn');
+      const display = document.getElementById('stopwatch-display');
+      const statusMessage = document.getElementById('status-message');
+
+      let timer = null;
+      let startTime = 0;
+      let running = false;
+
+      function updateDisplay() {
+        const elapsed = Date.now() - startTime;
+        const minutes = String(Math.floor(elapsed / 60000)).padStart(2, '0');
+        const seconds = String(Math.floor((elapsed % 60000) / 1000)).padStart(2, '0');
+        const milliseconds = String(elapsed % 1000).padStart(3, '0');
+        display.textContent = `${minutes}:${seconds}:${milliseconds}`;
+      }
+
+      function setStatus(message, isError = false) {
+        statusMessage.textContent = message;
+        statusMessage.style.color = isError ? '#fa3e3e' : '#42b72a';
+      }
+
+      function updateButtonStates(isManualMode, isRunning) {
+          startBtn.disabled = !isManualMode || isRunning;
+          stopBtn.disabled = !isManualMode || !isRunning;
+          resetBtn.disabled = !isManualMode || isRunning;
+      }
+
+      manualModeSwitch.addEventListener('change', () => {
+        const isManual = manualModeSwitch.checked;
+        if (!isManual && running) {
+            // If toggled off during a run, stop and reset everything
+            clearInterval(timer);
+            timer = null;
+            running = false;
+            display.textContent = '00:00:00.000';
+            setStatus('Manuelle Messung deaktiviert.');
+        }
+        updateButtonStates(isManual, running);
+      });
+
+      startBtn.addEventListener('click', async () => {
+        setStatus('Starte Messung...');
+        try {
+          const response = await fetch('/manual/start', { method: 'POST' });
+          const data = await response.json();
+          if (response.ok && data.status === 'manual_start') {
+            startTime = Date.now();
+            running = true;
+            timer = setInterval(updateDisplay, 10);
+            updateButtonStates(true, true);
+            setStatus('Messung läuft...');
+          } else {
+            setStatus(data.error || 'Start fehlgeschlagen', true);
+          }
+        } catch (e) {
+          setStatus('Fehler: Keine Verbindung', true);
+        }
+      });
+
+      stopBtn.addEventListener('click', async () => {
+        setStatus('Stoppe Messung...');
+        try {
+          const response = await fetch('/manual/stop', { method: 'POST' });
+          const data = await response.json();
+          if (response.ok && data.status === 'manual_stop') {
+            clearInterval(timer);
+            timer = null;
+            running = false;
+            const finalTime = data.elapsed_ms;
+            const minutes = String(Math.floor(finalTime / 60000)).padStart(2, '0');
+            const seconds = String(Math.floor((finalTime % 60000) / 1000)).padStart(2, '0');
+            const milliseconds = String(finalTime % 1000).padStart(3, '0');
+            display.textContent = `${minutes}:${seconds}:${milliseconds}`;
+            updateButtonStates(true, false);
+            setStatus(`Gestoppt: ${finalTime} ms`);
+          } else {
+            setStatus(data.error || 'Stop fehlgeschlagen', true);
+          }
+        } catch (e) {
+          setStatus('Fehler: Keine Verbindung', true);
+        }
+      });
+
+      resetBtn.addEventListener('click', async () => {
+          setStatus('Setze zurück...');
+          try {
+            // Also call the backend reset to be safe
+            const response = await fetch('/reset', { method: 'POST' });
+            if(response.ok) {
+                running = false;
+                clearInterval(timer);
+                timer = null;
+                display.textContent = '00:00:00.000';
+                updateButtonStates(true, false);
+                setStatus('Bereit für neue Messung.');
+            } else {
+                setStatus('Reset fehlgeschlagen', true);
+            }
+          } catch(e) {
+              setStatus('Fehler: Keine Verbindung', true);
+          }
+      });
+      
+      // Initial state
+      updateButtonStates(false, false);
+    });
+  </script>
   </body>
   </html>
   """

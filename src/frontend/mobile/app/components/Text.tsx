@@ -20,9 +20,11 @@ export const Text = styled.Text<{
       : theme.colors.text};
   font-size: ${({ theme, variant = "body" }) => theme.typography[variant]}px;
   font-weight: ${({ variant }) =>
-    variant === "h1" || variant === "h2" ? "700" : "400"};
+    variant === "h1" ? "700" : variant === "h2" ? "600" : "400"};
 `;
 
 export const CardText = styled(Text)`
-  margin-bottom: ${({ theme }) => theme.spacing.md}px;
+  font-size: ${({ theme }) => theme.typography.body}px;
+  color: ${({ theme }) => theme.colors.textMuted};
+  line-height: 22px; /* Improve readability */
 `;

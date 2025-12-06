@@ -10,19 +10,20 @@ interface CardProps extends ViewProps {
 }
 
 const StyledCard = styled.View<{ theme: AppTheme }>`
-  margin-top: ${({ theme }) => theme.spacing.lg}px;
   background-color: ${({ theme }) => theme.colors.card};
   border-radius: ${({ theme }) => theme.components.card.borderRadius}px;
   padding: ${({ theme }) => theme.components.card.padding}px;
-  border: ${({ theme }) => theme.components.card.borderWidth}px solid
-    ${({ theme }) => theme.colors.border};
+  margin-bottom: ${({ theme }) => theme.spacing.md}px;
+  border-width: 1px;
+  border-color: ${({ theme }) => theme.colors.border};
 `;
 
 const CardTitle = styled.Text<{ theme: AppTheme }>`
   color: ${({ theme }) => theme.colors.text};
   font-size: ${({ theme }) => theme.typography.h2}px;
-  font-weight: 700;
-  margin-bottom: ${({ theme }) => theme.spacing.md}px;
+  font-weight: 600; /* Slightly less bold */
+  margin-bottom: ${({ theme }) =>
+    theme.spacing.lg}px; /* More space after title */
 `;
 
 const CardContent = styled.View``;
