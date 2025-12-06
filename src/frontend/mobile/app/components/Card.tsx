@@ -1,10 +1,10 @@
 // src/components/ui/Card.tsx
 import React from "react";
+import { ViewProps } from "react-native";
 import styled from "styled-components/native";
-import type { AppTheme } from "../../theme";
-import { Text } from "./Text";
+import type { AppTheme } from "../themes";
 
-interface CardProps {
+interface CardProps extends ViewProps {
   children: React.ReactNode;
   title?: string;
 }
@@ -27,44 +27,11 @@ const CardTitle = styled.Text<{ theme: AppTheme }>`
 
 const CardContent = styled.View``;
 
-export const Card: React.FC<CardProps> = ({ children, title }) => {
-  // Hilfsfunktion: String-Children in <Text> wrappen
-  const renderChildren = (children: React.ReactNode) => {
-    if (
-      children === null ||
-      children === undefined ||
-      (typeof children === "string" && children.trim() === "")
-    ) {
-      return null;
-    }
-    if (typeof children === "string" || typeof children === "number") {
-      return <Text>{children}</Text>;
-    }
-    if (Array.isArray(children)) {
-      return children
-        .map((child, idx) => {
-          if (
-            child === null ||
-            child === undefined ||
-            (typeof child === "string" && child.trim() === "")
-          ) {
-            return null;
-          }
-          return typeof child === "string" || typeof child === "number" ? (
-            <Text key={idx}>{child}</Text>
-          ) : (
-            child
-          );
-        })
-        .filter(Boolean);
-    }
-    return children;
-  };
-
+export const Card: React.FC<CardProps> = ({ children, title, ...rest }) => {
   return (
-    <StyledCard>
+    <StyledCard {...rest}>
       {title && <CardTitle>{title}</CardTitle>}
-      <CardContent>{renderChildren(children)}</CardContent>
+      <CardContent>{children}</CardContent>
     </StyledCard>
   );
 };

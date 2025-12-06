@@ -1,36 +1,34 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native";
 import styled, { ThemeProvider } from "styled-components/native";
 import { TabBar } from "./components";
 import { darkTheme, lightTheme } from "./themes";
 
-import type {
-  FotoDokumentation as FotoDokumentationType,
-  Kalkulation as KalkulationType,
-  Messdaten,
-  Sicherheitsmassnahme,
-} from "./utils/projectDataManager";
-
-import Dashboard from "./screens/Dashboard";
-import EntwicklungenScreen from "./screens/Entwicklungen";
-import FotoDokumentation from "./screens/FotoDokumentation";
-import Kalkulation from "./screens/Kalkulation";
+import DashboardScreen from "./screens/DashboardScreen";
 import LoginView from "./screens/Login";
-import MessdatenErfassung from "./screens/MessdatenErfassung";
-import ProjektDetail from "./screens/ProjektDetail";
-import Settings from "./screens/Settings";
-import Sicherheitsmassnahmen from "./screens/Sicherheitsmassnahmen";
+import MessungScreen from "./screens/MessungScreen";
+import SettingsScreen from "./screens/Settings";
+import TeamScreen from "./screens/TeamScreen";
+import VerlaufScreen from "./screens/VerlaufScreen";
 
-type Screen =
-  | "dashboard"
-  | "messdaten"
-  | "projekt"
-  | "fotodokumentation"
-  | "sicherheit"
-  | "kalkulation"
-  | "settings"
-  | "entwicklung";
+type Screen = "dashboard" | "messung" | "team" | "verlauf" | "settings";
+
+export interface Dog {
+  name: string;
+  team: string;
+}
+
+export interface HistoryEntry {
+  dog: string;
+  team: string;
+  time: number;
+}
+
+export interface StatusMessage {
+  type: "info" | "warning" | "error";
+  text: string;
+}
 
 const AppContainer = styled.View`
   flex: 1;
@@ -45,112 +43,124 @@ const TabBarWrapper = styled.View`
 `;
 
 export default function MobileApp() {
-  // Daten-State für alle Views
-  const [messdaten, setMessdaten] = React.useState<Messdaten[]>([]);
-  const [fotos, setFotos] = React.useState<FotoDokumentationType[]>([]);
-  const [sicherheit, setSicherheit] = React.useState<Sicherheitsmassnahme[]>(
-    []
-  );
-  const [kalkulation, setKalkulation] = React.useState<KalkulationType[]>([]);
-  const [isDark, setIsDark] = React.useState(false);
-  const [currentScreen, setCurrentScreen] = React.useState<Screen>("dashboard");
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [isDark, setIsDark] = useState(false);
+  const [currentScreen, setCurrentScreen] = useState<Screen>("dashboard");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // 🔧 Beim Start Skip-Login prüfen
-  useEffect(() => {
-    setIsLoading(false); // Sofort nach Start Login anzeigen
-    fetchServerStatus();
-  }, []);
+  // Zentraler App-State
+  const [dogs, setDogs] = useState<Dog[]>([]);
+  const [teams, setTeams] = useState<string[]>([]);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
 
-  const fetchServerStatus = async () => {
-    try {
-      const res = await fetch("https://api.cloudforming.de/api/status");
-      const data = await res.json();
-      console.log("Externer Server-Status:", data);
-      // Du kannst die Daten auch im State speichern und anzeigen!
-    } catch (err) {
-      console.error("Fehler beim Abrufen des Server-Status:", err);
+  // Funktionen zur Manipulation des zentralen States
+  const handleAddDog = (dog: Dog) => {
+    if (dog.name && dog.team && !dogs.some((d) => d.name === dog.name)) {
+      setDogs([...dogs, dog]);
     }
   };
 
-  // Skip-Login-Logik für Test entfernt
+  const handleAddTeam = (team: string) => {
+    if (team && !teams.includes(team)) {
+      setTeams([...teams, team]);
+    }
+  };
+
+  const handleBatchAdd = (newDogs: Dog[], newTeams: string[]) => {
+    setDogs((prevDogs) => {
+      const dogsToAdd = newDogs.filter(
+        (newDog) => !prevDogs.some((d) => d.name === newDog.name)
+      );
+      return [...prevDogs, ...dogsToAdd];
+    });
+
+    setTeams((prevTeams) => {
+      const uniqueNewTeams = [...new Set(newTeams)]; // Duplikate aus dem Import entfernen
+      const teamsToAdd = uniqueNewTeams.filter(
+        (newTeam) => !prevTeams.includes(newTeam)
+      );
+      return [...prevTeams, ...teamsToAdd];
+    });
+  };
+
+  const addToHistory = (entry: HistoryEntry) => {
+    setHistory((prev) => [entry, ...prev.slice(0, 9)]); // Behalte die letzten 10 Einträge
+  };
+
+  const clearHistory = () => {
+    setHistory([]);
+  };
+
+  const clearTeamsAndDogs = () => {
+    setDogs([]);
+    setTeams([]);
+  };
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
 
   const handleLogin = () => {
-    console.log("handleLogin wurde ausgeführt!");
     setIsLoggedIn(true);
     setCurrentScreen("dashboard");
   };
 
   const handleLogout = async () => {
-    // Skip-Login Einstellung NICHT löschen
-    // Nur den Login-Status zurücksetzen
     setIsLoggedIn(false);
     setCurrentScreen("dashboard");
   };
 
-  // Callback-Funktionen
-  const handleMessdatenChange = (data: Messdaten[]) => setMessdaten(data);
-  const handleFotoChange = (data: FotoDokumentationType[]) => setFotos(data);
-  const handleSicherheitChange = (data: Sicherheitsmassnahme[]) =>
-    setSicherheit(data);
-  const handleKalkulationChange = (data: KalkulationType[]) =>
-    setKalkulation(data);
-
   const renderScreen = () => {
-    console.log("📱 Aktueller Screen:", currentScreen);
-
-    // Beim Laden: Nichts anzeigen
     if (isLoading) {
       return null;
     }
-
-    // Wenn nicht eingeloggt, zeige LoginView
     if (!isLoggedIn) {
       return <LoginView onLoginSuccess={handleLogin} />;
     }
 
     switch (currentScreen) {
       case "dashboard":
-        return <Dashboard />;
-      case "messdaten":
         return (
-          <MessdatenErfassung
-            messdaten={messdaten}
-            onMessdatenChange={handleMessdatenChange}
+          <DashboardScreen
+            dogs={dogs}
+            teams={teams}
+            history={history}
+            navigateTo={(s: Screen) => setCurrentScreen(s)}
           />
         );
-      case "projekt":
-        return <ProjektDetail />;
-      case "fotodokumentation":
+      case "messung":
+        return <MessungScreen dogs={dogs} addToHistory={addToHistory} />;
+      case "team":
         return (
-          <FotoDokumentation fotos={fotos} onFotoChange={handleFotoChange} />
-        );
-      case "sicherheit":
-        return (
-          <Sicherheitsmassnahmen
-            sicherheit={sicherheit}
-            onSicherheitChange={handleSicherheitChange}
+          <TeamScreen
+            dogs={dogs}
+            teams={teams}
+            onAddDog={handleAddDog}
+            onAddTeam={handleAddTeam}
+            onBatchAdd={handleBatchAdd}
+            onClearTeamsAndDogs={clearTeamsAndDogs}
           />
         );
-      case "kalkulation":
+      case "verlauf":
         return (
-          <Kalkulation
-            kalkulation={kalkulation}
-            onKalkulationChange={handleKalkulationChange}
-          />
+          <VerlaufScreen history={history} onClearHistory={clearHistory} />
         );
       case "settings":
         return (
-          <Settings
+          <SettingsScreen
             toggleTheme={() => setIsDark((v) => !v)}
             onLogout={handleLogout}
           />
         );
-      case "entwicklung":
-        return <EntwicklungenScreen />;
       default:
-        return <Dashboard />;
+        return (
+          <DashboardScreen
+            dogs={dogs}
+            teams={teams}
+            history={history}
+            navigateTo={(s: Screen) => setCurrentScreen(s)}
+          />
+        );
     }
   };
 
@@ -164,7 +174,10 @@ export default function MobileApp() {
           </ScreenContainer>
           {isLoggedIn && (
             <TabBarWrapper>
-              <TabBar activeTab={currentScreen} onTabPress={setCurrentScreen} />
+              <TabBar
+                currentScreen={currentScreen}
+                onScreenChange={(s: Screen) => setCurrentScreen(s)}
+              />
             </TabBarWrapper>
           )}
         </AppContainer>

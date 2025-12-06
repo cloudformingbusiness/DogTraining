@@ -2,27 +2,19 @@
 import React from "react";
 import { ScrollView } from "react-native";
 import styled from "styled-components/native";
-import type { AppTheme } from "../../theme";
+import { AppTheme } from "../themes";
 
-type TabKey =
-  | "dashboard"
-  | "messdaten"
-  | "projekt"
-  | "fotodokumentation"
-  | "sicherheit"
-  | "kalkulation"
-  | "settings"
-  | "entwicklung";
+type Screen = "dashboard" | "messung" | "team" | "verlauf" | "settings";
 
 interface Tab {
-  key: TabKey;
+  key: Screen;
   label: string;
   icon: string;
 }
 
-interface TabBarProps {
-  activeTab: TabKey;
-  onTabPress: (tab: TabKey) => void;
+export interface TabBarProps {
+  currentScreen: Screen;
+  onScreenChange: (screen: Screen) => void;
 }
 
 const TabBarContainer = styled.View<{ theme: AppTheme }>`
@@ -73,27 +65,29 @@ const TabLabel = styled.Text<{ theme: AppTheme; isActive: boolean }>`
 
 const tabs: Tab[] = [
   { key: "dashboard", label: "Dashboard", icon: "📊" },
-  { key: "projekt", label: "Projekt", icon: "📋" },
-  { key: "messdaten", label: "Messdaten", icon: "📏" },
-  { key: "fotodokumentation", label: "Fotos", icon: "📷" },
-  { key: "sicherheit", label: "Sicherheit", icon: "⚠️" },
-  { key: "kalkulation", label: "Kalkulation", icon: "💰" },
+  { key: "messung", label: "Messung", icon: "⏱️" },
+  { key: "team", label: "Team", icon: "👥" },
+  { key: "verlauf", label: "Verlauf", icon: "📜" },
   { key: "settings", label: "Einstellungen", icon: "⚙️" },
-  { key: "entwicklung", label: "Entwicklung", icon: "🛠️" },
 ];
 
-export const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabPress }) => {
+export const TabBar: React.FC<TabBarProps> = ({
+  currentScreen,
+  onScreenChange,
+}) => {
   return (
     <TabBarContainer>
       <TabBarScrollView>
         {tabs.map((tab) => (
           <TabButton
             key={tab.key}
-            isActive={activeTab === tab.key}
-            onPress={() => onTabPress(tab.key)}
+            isActive={currentScreen === tab.key}
+            onPress={() => onScreenChange(tab.key)}
           >
-            <TabIcon isActive={activeTab === tab.key}>{tab.icon}</TabIcon>
-            <TabLabel isActive={activeTab === tab.key}>{tab.label}</TabLabel>
+            <TabIcon isActive={currentScreen === tab.key}>{tab.icon}</TabIcon>
+            <TabLabel isActive={currentScreen === tab.key}>
+              {tab.label}
+            </TabLabel>
           </TabButton>
         ))}
       </TabBarScrollView>
